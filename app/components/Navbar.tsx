@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, MessageCircle, Phone, ChevronRight } from "lucide-react";
+import { Menu, X, Phone, ChevronRight } from "lucide-react";
 import Logo from "../../public/assests/a-minimalist-logo-design-featuring-the-t_nLJKfNQ0T0uGtJNKLQ3r3g_zrM7N7OFRf6zuVquxBMHuA-removebg-preview.png";
 import { FaWhatsapp } from "react-icons/fa";
 

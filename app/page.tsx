@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Navbar from "./components/Navbar";
 import CustomCarousel from "./components/CustomCarousal";
 import PopularProducts from "./components/Popular-Products";
