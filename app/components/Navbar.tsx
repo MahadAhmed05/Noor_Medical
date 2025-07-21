@@ -9,9 +9,9 @@ import { FaWhatsapp } from "react-icons/fa";
 
 const navLinks = [
   { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Services", href: "#services" },
-  { name: "Contact", href: "#contact" },
+  { name: "Category", href: "#category" },
+  { name: "Brands", href: "#brands" },
+  { name: "Location", href: "#location" },
 ];
 
 export default function Navbar() {

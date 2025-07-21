@@ -1,5 +1,14 @@
-// pages/popular-products.tsx
-import React from "react";
+"use client"
+
+import React, { useState } from "react";
+import {
+  FaStar,
+  FaHeart,
+  FaEye,
+  FaShippingFast,
+  FaTruck,
+} from "react-icons/fa";
+import { MdLocalOffer } from "react-icons/md";
 
 type Product = {
   id: string;
@@ -10,6 +19,11 @@ type Product = {
   price: number;
   originalPrice: number;
   discountPercent: number;
+  description?: string;
+  rating: number;
+  reviews: number;
+  inStock: number;
+  isFeatured?: boolean;
 };
 
 const products: Product[] = [
@@ -22,6 +36,10 @@ const products: Product[] = [
     price: 560,
     originalPrice: 800,
     discountPercent: 30,
+    description: "Cold-pressed natural oil",
+    rating: 4.5,
+    reviews: 128,
+    inStock: 15,
   },
   {
     id: "2",
@@ -32,6 +50,11 @@ const products: Product[] = [
     price: 238,
     originalPrice: 340,
     discountPercent: 30,
+    description: "Organic virgin coconut oil",
+    rating: 4.8,
+    reviews: 95,
+    inStock: 8,
+    isFeatured: true,
   },
   {
     id: "3",
@@ -42,6 +65,10 @@ const products: Product[] = [
     price: 218,
     originalPrice: 229,
     discountPercent: 5,
+    description: "Premium protection mask",
+    rating: 4.2,
+    reviews: 67,
+    inStock: 25,
   },
   {
     id: "4",
@@ -52,6 +79,10 @@ const products: Product[] = [
     price: 18026,
     originalPrice: 18975,
     discountPercent: 5,
+    description: "Advanced glucose monitoring",
+    rating: 4.9,
+    reviews: 203,
+    inStock: 3,
   },
   {
     id: "5",
@@ -62,40 +93,250 @@ const products: Product[] = [
     price: 2655,
     originalPrice: 2950,
     discountPercent: 10,
+    description: "Dermatologist recommended",
+    rating: 4.6,
+    reviews: 89,
+    inStock: 12,
   },
 ];
 
 const PopularProductsPage = () => {
-  
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  const toggleFavorite = (productId: string) => {
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(productId)) {
+      newFavorites.delete(productId);
+    } else {
+      newFavorites.add(productId);
+    }
+    setFavorites(newFavorites);
+  };
+
+  const getBadgeColor = (discount: number) => {
+    if (discount >= 30) return "from-red-500 to-red-600";
+    if (discount >= 15) return "from-orange-500 to-orange-600";
+    return "from-blue-500 to-blue-600";
+  };
+
+  const getStockStatus = (stock: number) => {
+    if (stock <= 5)
+      return {
+        text: `Only ${stock} left!`,
+        color: "text-red-600",
+        bgColor: "bg-red-50",
+      };
+    if (stock <= 10)
+      return {
+        text: `${stock} in stock`,
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
+      };
+    return {
+      text: "In Stock",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+    };
+  };
+
   return (
-    <main style={styles.page}>
-      <div style={styles.container}>
-        <h2 style={styles.heading}>Popular Products</h2>
-        <div style={styles.grid}>
-          {products.map((product) => (
-            <div key={product.id} style={styles.card}>
-              {product.discountPercent > 0 && (
-                <div style={styles.badge}>{product.discountPercent}% Off</div>
-              )}
-              <img
-                src={product.image}
-                alt={product.name}
-                style={styles.image}
-              />
-              <div style={styles.details}>
-                <h3 style={styles.name}>{product.name}</h3>
-                <p style={styles.meta}>{product.type}</p>
-                <p style={styles.meta}>Pack Size: {product.packSize}</p>
-                <div style={styles.prices}>
-                  <span style={styles.price}>Rs {product.price}</span>
-                  <span style={styles.original}>
-                    Rs {product.originalPrice}
-                  </span>
+    <main className="py-12 bg-gradient-to-br from-slate-50 via-white to-gray-50 min-h-screen">
+      <div className="max-w-[1280px] mx-auto px-4">
+        {/* Header Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            Popular Products
+          </h2>
+          <p className="text-gray-600 mt-2">
+            Top-rated healthcare products trusted by thousands
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mx-auto mt-4"></div>
+        </div>
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+          {products.map((product, index) => {
+            const stockStatus = getStockStatus(product.inStock);
+            const savings = product.originalPrice - product.price;
+            const isHovered = hoveredCard === product.id;
+            const isFavorite = favorites.has(product.id);
+
+            return (
+              <div
+                key={product.id}
+                className={`group relative bg-white rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer ${
+                  product.isFeatured
+                    ? "lg:col-span-1 lg:row-span-1 ring-2 ring-green-200"
+                    : ""
+                } ${isHovered ? "scale-105 -translate-y-2" : ""}`}
+                onMouseEnter={() => setHoveredCard(product.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200 to-green-200 rounded-full -translate-y-16 translate-x-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-green-200 to-purple-200 rounded-full translate-y-12 -translate-x-12"></div>
                 </div>
-                <button style={styles.button}>Add to cart</button>
+
+                {/* Discount Badge */}
+                {product.discountPercent > 0 && (
+                  <div
+                    className={`absolute top-0 right-0 z-10 bg-gradient-to-r ${getBadgeColor(
+                      product.discountPercent
+                    )} text-white px-3 py-1 text-xs font-bold rounded-bl-2xl rounded-tr-2xl shadow-lg`}
+                  >
+                    {product.discountPercent}% OFF
+                  </div>
+                )}
+
+                {/* Featured Badge */}
+                {product.isFeatured && (
+                  <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-green-500 to-green-600 text-white px-2 py-1 text-xs font-bold rounded-full flex items-center gap-1 shadow-lg">
+                    <MdLocalOffer size={12} />
+                    Editor's Pick
+                  </div>
+                )}
+
+                {/* Quick Actions */}
+                <div
+                  className={`absolute top-3 left-3 flex flex-col gap-2 z-20 transition-all duration-300 ${
+                    isHovered
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 -translate-x-4"
+                  } ${product.isFeatured ? "top-12" : ""}`}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(product.id);
+                    }}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
+                      isFavorite
+                        ? "bg-red-500 text-white"
+                        : "bg-white text-gray-600 hover:bg-red-50 hover:text-red-500"
+                    }`}
+                  >
+                    <FaHeart size={12} />
+                  </button>
+                  <button className="w-8 h-8 bg-white text-gray-600 rounded-full flex items-center justify-center shadow-md hover:bg-blue-50 hover:text-blue-500 transition-all duration-300">
+                    <FaEye size={12} />
+                  </button>
+                </div>
+
+                <div className="p-6">
+                  {/* Product Image */}
+                  <div className="relative mb-4 flex justify-center">
+                    <div className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-3 group-hover:bg-gradient-to-br group-hover:from-blue-50 group-hover:to-green-50 transition-all duration-500">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Product Details */}
+                  <div className="text-center space-y-2">
+                    {/* Rating */}
+                    <div className="flex items-center justify-center gap-1 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar
+                            key={i}
+                            size={12}
+                            className={
+                              i < Math.floor(product.rating)
+                                ? "text-yellow-400"
+                                : "text-gray-300"
+                            }
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-600">
+                        {product.rating} ({product.reviews})
+                      </span>
+                    </div>
+
+                    {/* Product Name */}
+                    <h3 className="font-semibold text-sm text-gray-800 line-clamp-2 min-h-[2.5rem] leading-tight">
+                      {product.name}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-xs text-blue-600 font-medium">
+                      {product.description}
+                    </p>
+
+                    {/* Type and Pack Size */}
+                    <p className="text-xs text-gray-500">
+                      {product.type} • Pack Size: {product.packSize}
+                    </p>
+
+                    {/* Stock Status */}
+                    <div
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${stockStatus.bgColor} ${stockStatus.color}`}
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full ${stockStatus.color.replace(
+                          "text-",
+                          "bg-"
+                        )}`}
+                      ></div>
+                      {stockStatus.text}
+                    </div>
+
+                    {/* Pricing */}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-lg font-bold text-gray-800">
+                          Rs {product.price.toLocaleString()}
+                        </span>
+                        <span className="text-sm text-gray-500 line-through">
+                          Rs {product.originalPrice.toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-green-600 font-medium">
+                        You save Rs {savings.toLocaleString()}!
+                      </p>
+                    </div>
+
+                    {/* Delivery Info */}
+                    <div className="flex items-center justify-center gap-1 text-xs text-green-600">
+                      <FaShippingFast size={12} />
+                      <span>Free Delivery</span>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <button className="w-full mt-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
               </div>
+            );
+          })}
+        </div>
+
+        {/* Trust Section */}
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border border-green-100">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <FaTruck className="text-green-600" size={20} />
+              <span className="text-lg font-semibold text-gray-800">
+                4.8/5 Customer Rating
+              </span>
             </div>
-          ))}
+            <p className="text-gray-600 text-sm">
+              Based on 1,200+ verified orders this week • Free delivery on
+              orders above Rs 500
+            </p>
+            <div className="flex justify-center mt-4 space-x-1">
+              {[...Array(5)].map((_, i) => (
+                <FaStar key={i} className="text-yellow-400" size={16} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -103,95 +344,3 @@ const PopularProductsPage = () => {
 };
 
 export default PopularProductsPage;
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    maxWidth: "1280px",
-    margin: "0 auto",
-  },
-
-  page: {
-    padding: "20px",
-    fontFamily: "Arial, sans-serif",
-    backgroundColor: "#f7f9fb",
-    minHeight: "100vh",
-  },
-  heading: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginBottom: "20px",
-    textAlign: "center",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "20px",
-  },
-  card: {
-    position: "relative",
-    border: "1px solid #e0e0e0",
-    borderRadius: "12px",
-    backgroundColor: "#fff",
-    padding: "16px",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.06)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    transition: "transform 0.2s",
-  },
-  badge: {
-    position: "absolute",
-    top: "0",
-    right: "0",
-    backgroundColor: "#e0f2ff",
-    color: "#0077b6",
-    fontSize: "12px",
-    padding: "4px 8px",
-    borderBottomLeftRadius: "8px",
-  },
-  image: {
-    width: "100px",
-    height: "100px",
-    objectFit: "contain",
-    marginBottom: "12px",
-  },
-  details: {
-    width: "100%",
-    textAlign: "center",
-  },
-  name: {
-    fontSize: "14px",
-    fontWeight: "600",
-    marginBottom: "4px",
-    minHeight: "38px",
-  },
-  meta: {
-    fontSize: "12px",
-    color: "#666",
-    margin: "2px 0",
-  },
-  prices: {
-    marginTop: "8px",
-    marginBottom: "12px",
-    fontSize: "14px",
-  },
-  price: {
-    fontWeight: "bold",
-    marginRight: "8px",
-  },
-  original: {
-    textDecoration: "line-through",
-    color: "#e63946",
-    fontSize: "12px",
-  },
-  button: {
-    width: "100%",
-    padding: "10px",
-    backgroundColor: "#0077b6",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "14px",
-  },
-};
