@@ -66,7 +66,7 @@ const pharmacyData: ContactInfo = {
 
 const PharmacyContactSection: React.FC = () => {
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [, setHoveredCard] = useState<string | null>(null);
 
   const copyToClipboard = async (text: string, type: string) => {
     try {

@@ -156,7 +156,7 @@ const PopularProductsPage = () => {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-          {products.map((product, index) => {
+          {products.map((product) => {
             const stockStatus = getStockStatus(product.inStock);
             const savings = product.originalPrice - product.price;
             const isHovered = hoveredCard === product.id;
@@ -194,7 +194,7 @@ const PopularProductsPage = () => {
                 {product.isFeatured && (
                   <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-green-500 to-green-600 text-white px-2 py-1 text-xs font-bold rounded-full flex items-center gap-1 shadow-lg">
                     <MdLocalOffer size={12} />
-                    Editor's Pick
+                    Editors Pick
                   </div>
                 )}
 
